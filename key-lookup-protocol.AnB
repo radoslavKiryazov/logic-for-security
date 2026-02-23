@@ -1,0 +1,20 @@
+Protocol: KeyLookup
+
+Types:
+  Agent A, I, X;
+  Number NKey;
+  Public_key PKX;
+  Function pk, sk;
+  Token AuthTokA;
+
+Knowledge:
+  A: A, I, X, pk(I), AuthTokA;
+  I: A, I, X, pk(I), sk(I), pk(X);
+
+Actions:
+  A -> I: A, X, AuthTokA, NKey
+  I -> A: {| I, X, pk(X), NKey |}sk(I)
+
+Goals:
+  pk(X) secret between A,I
+  A authenticates I on pk(X)
