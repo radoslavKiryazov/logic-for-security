@@ -2,18 +2,16 @@ Protocol: KeyLookup
 
 Types:
   Agent A, I, X;
-  Number NKey;
-  Public_key PKX;
+  Number authTokA;
   Function pk, sk;
-  Token AuthTokA;
 
 Knowledge:
-  A: A, I, X, pk(I), AuthTokA;
-  I: A, I, X, pk(I), sk(I), pk(X);
+  A: A, I, X, pk(I), authTokA;
+  I: A, I, X, pk(I), inv(pk(I)), pk(X);
 
 Actions:
-  A -> I: A, X, AuthTokA, NKey
-  I -> A: {| I, X, pk(X), NKey |}sk(I)
+  A -> I: A, X, authTokA
+  I -> A: {I, X, pk(X)}inv(pk(I))
 
 Goals:
   pk(X) secret between A,I
