@@ -1,4 +1,4 @@
-Protocol: auth_v2_two_tickets
+Protocol: auth_v2_two_tickets_forward
 
 Types:
   Agent A, B, P, idP;
@@ -19,11 +19,14 @@ Actions:
               {{idP, A, B, P, Folder, Permission, NA}inv(pk(idP))}pk(P)
             }inv(pk(idP))
 
-  A -> B: {{idP, A, B, P, pk(P), Folder, Permission, NA}inv(pk(idP))}pk(B)
+  A -> P: { A, P,
+            {{idP, A, B, P, pk(P), Folder, Permission, NA}inv(pk(idP))}pk(B),
+            {{idP, A, B, P, Folder, Permission, NA}inv(pk(idP))}pk(P)
+          }pk(P)
 
-  A -> P: {{idP, A, B, P, Folder, Permission, NA}inv(pk(idP))}pk(P)
-
-  P -> B: {{P, B, NP, Folder, Permission, NA}inv(pk(P))}pk(B)
+  P -> B: {{idP, A, B, P, pk(P), Folder, Permission, NA}inv(pk(idP))}pk(B),
+          P, B, NP, Folder, Permission, NA,
+          {P, B, NP, Folder, Permission, NA}inv(pk(P))
 
   B -> P: {{B, P, NP, Photos}inv(pk(B))}pk(P)
 
