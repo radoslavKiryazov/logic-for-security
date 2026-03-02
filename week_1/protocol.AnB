@@ -2,7 +2,7 @@ Protocol: auth_v2_two_tickets_forward
 
 Types:
   Agent A, B, P, idP;
-  Number Folder, Permission, NA, NP, Photos;
+  Number Folder, Permission, NA, NPhotos;
   Function pk, pw;
 
 Knowledge:
@@ -14,24 +14,22 @@ Knowledge:
 Actions:
   A -> idP: {A, B, P, Folder, Permission, NA, pw(A, idP)}pk(idP)
 
-  idP -> A: { idP, A,
-              {{idP, A, B, P, pk(P), Folder, Permission, NA}inv(pk(idP))}pk(B),
-              {{idP, A, B, P, Folder, Permission, NA}inv(pk(idP))}pk(P)
-            }inv(pk(idP))
+  idP -> A: {{idP, A, B, P, pk(P), Folder, Permission, NA}inv(pk(idP))}pk(B),
+  {{idP, A, B, P, pk(B), NA}inv(pk(idP))}pk(P)
 
   A -> P: { A, P,
             {{idP, A, B, P, pk(P), Folder, Permission, NA}inv(pk(idP))}pk(B),
-            {{idP, A, B, P, Folder, Permission, NA}inv(pk(idP))}pk(P)
-          }pk(P)
+            {{idP, A, B, P, NA}inv(pk(idP))}pk(P)
+          }pk(P) 
 
   P -> B: {{idP, A, B, P, pk(P), Folder, Permission, NA}inv(pk(idP))}pk(B),
-          P, B, NP, Folder, Permission, NA,
-          {P, B, NP, Folder, Permission, NA}inv(pk(P))
+          P, B, Folder, Permission, NA,
+          {P, B, NA}inv(pk(P))
 
-  B -> P: {{B, P, NP, Photos}inv(pk(B))}pk(P)
+  B -> P: {{B, P, Photos}inv(pk(B))}pk(P)
 
 Goals:
   Photos secret between B, P
   B authenticates idP on A, B, P, pk(P), Folder, Permission, NA
   B authenticates P on P, B, NP, Folder, Permission, NA
-  P authenticates B on NP, Photos
+  P authenticates B on Photos
