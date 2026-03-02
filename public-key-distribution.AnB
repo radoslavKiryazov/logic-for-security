@@ -1,0 +1,18 @@
+Protocol: Public Key Distribution
+
+Types:
+  Agent A, I, X;
+  Number NA;
+  Function pk;
+
+Knowledge:
+  A: A, I, X, pk(I);
+  I: A, I, X, pk(I), inv(pk(I)), pk(X);
+
+Actions:
+  #---- (A authenticates to IdP and requests an authorization token) ----
+  A -> I: {A, X, NA}pk(I)
+  I -> A: {I, A, X, pk(X), NA}inv(pk(I))
+
+Goals:
+  A authenticates I on X, pk(X), NA
