@@ -1,0 +1,55 @@
+Protocol: AuthorizationAccess
+
+Types:
+  Agent A, Idp, P, B;
+  Number NA, NB, NP, Scope, Photos;
+  Function pk, pw;
+
+Knowledge:
+  A: A, Idp, P, B, pk(Idp), pw(A, Idp);
+  Idp: A, Idp, P, B, pk(Idp), inv(pk(Idp)), pw(A, Idp), pk(P), pk(B);
+  P: A, Idp, P, B, pk(P), inv(pk(P)), pk(Idp);
+  B: A, Idp, P, B, pk(Idp), inv(pk(B)), pk(B), pk(P);
+
+Actions:
+  #// (1) A authenticates to Idp and requests pk(P), pk(B)
+  A -> Idp: {A, P, B, NA, pw(A, Idp)}pk(Idp)
+
+  #// (2) Idp returns the public keys as a signed directory token (DirTok)
+  Idp -> A: {Idp, A, P, pk(P), B, pk(B), NA}inv(pk(Idp))
+
+  #// (3) A requests authorization: give P access at B with Scope (bound to NA and DirTok)
+  A -> Idp: {A, P, B, Scope, NA, {Idp, A, P, pk(P), B, pk(B), NA}inv(pk(Idp))}pk(Idp)
+
+  #// (4) Idp issues an authorization token for B (AuthTok)
+  Idp -> A: {Idp, A, P, B, Scope, NA}inv(pk(Idp))
+
+  #// (5) A forwards DirTok and AuthTok to P
+  A -> P: {A, P, B, Scope, NA,
+           {Idp, A, P, pk(P), B, pk(B), NA}inv(pk(Idp)),
+           {Idp, A, P, B, Scope, NA}inv(pk(Idp))}pk(P)
+
+  #// (6) P verifies with Idp that DirTok/AuthTok are valid (and learns pk(B) from Idp-confirmation)
+  P -> Idp: {P, B, Scope, NA, NP,
+             {Idp, A, P, pk(P), B, pk(B), NA}inv(pk(Idp)),
+             {Idp, A, P, B, Scope, NA}inv(pk(Idp))}pk(Idp)
+
+  #// Idp confirms to P (freshness NP) and restates the bindings (including pk(B))
+  Idp -> P: {Idp, P, B, pk(B), Scope, NA, NP}inv(pk(Idp))
+
+  #// (7) P requests photos from B: NB in clear + signed request includes the AuthTok
+  P -> B: P, B, NB,
+          {P, B, NB, {Idp, A, P, B, Scope, NA}inv(pk(Idp))}inv(pk(P))
+
+  #// (8) B responds with signed+encrypted photos
+  B -> P: {{B, P, NB, Photos}inv(pk(B))}pk(P)
+
+Goals:
+  #// B must accept only Idp-authorized delegation
+  B authenticates Idp on A, P, B, Scope, NA
+
+  #// B authenticates P on the request that carries the Idp authorization token
+  B authenticates P on P, B, NB, {Idp, A, P, B, Scope, NA}inv(pk(Idp))
+
+  #// P authenticates B on NB, Photos (P can verify B since it learned pk(B) from Idp in (6)-(6b))
+  P authenticates B on NB, Photos
