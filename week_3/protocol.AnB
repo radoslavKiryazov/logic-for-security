@@ -1,14 +1,14 @@
 Protocol: auth_v2_fixed
 
 Types:
-  Agent A, B, P, idP;
+  Agent A, B, P, IdP;
   Number Folder, Permission, NA, NP, Photos;
   Function pk, pw;
 
 Knowledge:
   A: A, B, P, IdP, pw(A, IdP), pk(IdP), pk(B), pk(P);
-  B: B, IdP, pk(IdP), inv(pk(B));
-  P: P, IdP, pk(IdP), inv(pk(P)), pk(B);
+  B: B, P, A, IdP, pk(IdP), inv(pk(B)), pk(B), pk(P);
+  P: P, B, A, IdP, pk(IdP), inv(pk(P)), pk(B), pk(P);
   IdP: A, B, P, IdP, pw(A, IdP), inv(pk(IdP)), pk(B), pk(P);
 
 Actions:
