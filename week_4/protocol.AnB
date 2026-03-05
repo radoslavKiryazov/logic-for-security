@@ -26,11 +26,12 @@ Actions:
   #// (5) A forwards DirTok and AuthTok to P
   A -> P: {f4(A, P,
             {{f3(Idp, A, B, P, pk(P), Folder, Permission, NA)}inv(pk(Idp))}pk(B),
-            {{f3(Idp, A, B, P, Folder, Permission, NA)}inv(pk(Idp))}pk(P))
+            {{f3(Idp, A, P, B, pk(B), Folder, Permission, NA)}inv(pk(Idp))}pk(P))
           }pk(P) 
 
-  P -> B: {{f3(Idp, A, B, P, pk(P), Folder, Permission, NA)}inv(pk(Idp))}pk(B)
-  #        {P, B, NB}inv(pk(P))
+  P -> B: { P, B, NB,
+          {{f3(Idp, A, B, P, pk(P), Folder, Permission, NA)}inv(pk(Idp))}pk(B)
+        }inv(pk(P))
 
   B -> P: {{f5(B, P, Photos)}inv(pk(B))}pk(P)
 
@@ -38,7 +39,8 @@ Goals:
   B authenticates Idp on A, P, B, NA
 
   #// B authenticates P on the request that carries the Idp authorization token
-  B authenticates P on P, B, NB, {Idp, A, P, B, Folder, Permission, NA}inv(pk(Idp))
+  # B authenticates P on P, B,{Idp, A, P, B, pk(B), Folder, Permission, NA}inv(pk(Idp))
+  B authenticates P on P, B, NB, {{f3(Idp, A, B, P, pk(P), Folder, Permission, NA)}inv(pk(Idp))}pk(B)
 
   #// P authenticates B on NB, Photos (P can verify B since it learned pk(B) from Idp in (6)-(6b))
   #P authenticates B on NB, Photos
