@@ -1,0 +1,25 @@
+Protocol: auth_v2_two_tickets_forward
+
+Types:
+  Agent A, B, P;
+  Number Folder, Permission, NA, NP, Photos;
+  Function pk;
+
+Knowledge:
+  A: A, B, P, pk(B), pk(P);
+  B: B, A, P, inv(pk(B)), pk(A), pk(P);
+  P: P, A, B, inv(pk(P)), pk(B), pk(A);
+
+Actions:
+  A -> P: { A, B, P, Folder, Permission, NA }pk(P)
+  P -> B: { P, B, NP, A, Folder, Permission, NA }inv(pk(P))
+  B -> P: {{ B, P, NP, Photos }inv(pk(B))}pk(P)
+
+Goals:
+  Photos secret between B, P
+
+  # B authenticates P on the signed request (includes NP + request contents)
+  B authenticates P on P, B, NP, A, Folder, Permission, NA
+
+  # P authenticates B on NP and Photos from B's signed response
+  P authenticates B on NP, Photos
