@@ -29,7 +29,7 @@ Actions:
             {{f3(Idp, A, P, B, pk(B), Folder, Permission, NA)}inv(pk(Idp))}pk(P))
           }pk(P) 
 
-  P -> B: { P, B, NB,
+  P -> B: {f5(P, B, NB),
           {{f3(Idp, A, B, P, pk(P), Folder, Permission, NA)}inv(pk(Idp))}pk(B)
         }inv(pk(P))
 
