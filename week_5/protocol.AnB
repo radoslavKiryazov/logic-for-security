@@ -1,0 +1,49 @@
+Protocol: AuthorizationAccess
+
+Types:
+  Agent A, Idp, P, B;
+  Number NA, NB, NP, Permission, Folder;
+  Function pk, pw;
+  Symmetric_key KAI;
+  Format f1, f2, f3, f4, f5;
+
+
+Knowledge:
+  A: A, Idp, P, B, pk(Idp), pw(A, Idp);
+  Idp: A, Idp, P, B, pk(Idp), inv(pk(Idp)), pw(A, Idp), pk(P), pk(B);
+  P: A, Idp, P, B, pk(P), inv(pk(P)), pk(Idp);
+  B: A, Idp, P, B, pk(Idp), inv(pk(B)), pk(B), pk(P);
+
+Actions:
+  #// (1) A authenticates to Idp and requests pk(P), pk(B)
+  A -> Idp: {f1(A, B, P, Idp, NA, Permission, Folder, pw(A, Idp), KAI)}pk(Idp)
+
+  #// (2) Idp returns the public keys as a signed directory token (DirTok)
+  Idp -> A: {|f2(pk(P), pk(B),
+            {{f3(Idp, A, B, P, pk(P), Folder, Permission, NA)}inv(pk(Idp))}pk(B),
+            {{f3(Idp, A, P, B, pk(B), Folder, Permission, NA)}inv(pk(Idp))}pk(P))|}KAI
+
+  #// (5) A forwards DirTok and AuthTok to P
+  A -> P: {f4(A, P,
+            {{f3(Idp, A, B, P, pk(P), Folder, Permission, NA)}inv(pk(Idp))}pk(B),
+            {{f3(Idp, A, P, B, pk(B), Folder, Permission, NA)}inv(pk(Idp))}pk(P))
+          }pk(P) 
+
+  P -> B: {f5(P, B, NB),
+          {{f3(Idp, A, B, P, pk(P), Folder, Permission, NA)}inv(pk(Idp))}pk(B)
+        }inv(pk(P))
+
+  B -> P: {{f5(B, P, Photos)}inv(pk(B))}pk(P)
+
+Goals:
+  B authenticates Idp on A, P, B, NA
+
+  #// B authenticates P on the request that carries the Idp authorization token
+  # B authenticates P on P, B,{Idp, A, P, B, pk(B), Folder, Permission, NA}inv(pk(Idp))
+  B authenticates P on P, B, NB, {{f3(Idp, A, B, P, pk(P), Folder, Permission, NA)}inv(pk(Idp))}pk(B)
+
+  #// P authenticates B on NB, Photos (P can verify B since it learned pk(B) from Idp in (6)-(6b))
+  #P authenticates B on NB, Photos
+
+  
+
