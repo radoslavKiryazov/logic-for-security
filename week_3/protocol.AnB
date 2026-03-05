@@ -6,31 +6,31 @@ Types:
   Function pk, pw;
 
 Knowledge:
-  A: A, B, P, idP, pw(A, idP), pk(idP), pk(B), pk(P);
-  B: B, idP, pk(idP), inv(pk(B));
-  P: P, idP, pk(idP), inv(pk(P)), pk(B);
-  idP: A, B, P, idP, pw(A, idP), inv(pk(idP)), pk(B), pk(P);
+  A: A, B, P, IdP, pw(A, IdP), pk(IdP), pk(B), pk(P);
+  B: B, IdP, pk(IdP), inv(pk(B));
+  P: P, IdP, pk(IdP), inv(pk(P)), pk(B);
+  IdP: A, B, P, IdP, pw(A, IdP), inv(pk(IdP)), pk(B), pk(P);
 
 Actions:
-  # 1) A asks idP for delegation (pw is data, not a key)
-  A -> idP: {A, B, P, Folder, Permission, NA, pw(A, idP)}pk(idP) # pw(A, idP) is used to authenticate A to idP, but is not used as a key for encryption or signing
+  # 1) A asks IdP for delegation (pw is data, not a key)
+  A -> IdP: {A, B, P, Folder, Permission, NA, pw(A, IdP)}pk(IdP) # pw(A, IdP) is used to authenticate A to IdP, but is not used as a key for encryption or signing
 
-  # 2) idP returns:
-  #    - TicketB: signed by idP, encrypted for B (contains scope + delegate)
-  idP -> A: {{idP, A, B, P, Folder, Permission, NA}inv(pk(idP))}pk(B)
+  # 2) IdP returns:
+  #    - TicketB: signed by IdP, encrypted for B (contains scope + delegate)
+  IdP -> A: {{IdP, A, B, P, Folder, Permission, NA}inv(pk(IdP))}pk(B)
 
   # 3) A forwards TicketB to P (P doesn’t need to read it)
-  A -> P: {{idP, A, B, P, Folder, Permission, NA}inv(pk(idP))}pk(B)
+  A -> P: {{IdP, A, B, P, Folder, Permission, NA}inv(pk(IdP))}pk(B)
 
-  # 4) P requests photos from B, proving idPentity and liveness with NP, and presenting TicketB (still encrypted for B)
+  # 4) P requests photos from B, proving IdPentity and liveness with NP, and presenting TicketB (still encrypted for B)
    P -> B: {P, B, NP,
-           {{idP, A, B, P, Folder, Permission, NA}inv(pk(idP))}pk(B)}inv(pk(P))
+           {{IdP, A, B, P, Folder, Permission, NA}inv(pk(IdP))}pk(B)}inv(pk(P))
 
   # 5) B returns photos bound to NP (prevents replay/mixup)
   B -> P: {{B, P, NP, Photos}inv(pk(B))}pk(P)
 
 Goals:
   Photos secret between B, P
-  B authenticates idP on A, B, P, Folder, Permission, NA
+  B authenticates IdP on A, B, P, Folder, Permission, NA
   B authenticates P on P, B, NP
   P authenticates B on NP, Photos
