@@ -6,20 +6,18 @@ Types:
   Function pk;
 
 Knowledge:
-  A: A, B, P, pk(B), pk(P);
+  A: A, B, P, inv(pk(A)),pk(B), pk(P);
   B: B, A, P, inv(pk(B)), pk(A), pk(P);
   P: P, A, B, inv(pk(P)), pk(B), pk(A);
 
 Actions:
-  A -> P: { A, B, P, Folder, Permission, NA }pk(P)
-  P -> B: { P, B, NP, A, Folder, Permission, NA }inv(pk(P))
+  A -> P: { {A, B, P, Folder, Permission, NA}inv(pk(A)) }pk(P)
+  P -> B: {{ P, B, NP, A, Folder, Permission, NA }inv(pk(P))}pk(B)
   B -> P: {{ B, P, NP, Photos }inv(pk(B))}pk(P)
 
 Goals:
   Photos secret between B, P
 
-  # B authenticates P on the signed request (includes NP + request contents)
   B authenticates P on P, B, NP, A, Folder, Permission, NA
 
-  # P authenticates B on NP and Photos from B's signed response
   P authenticates B on NP, Photos
