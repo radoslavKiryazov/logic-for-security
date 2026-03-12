@@ -1,8 +1,8 @@
 ```mermaid
 sequenceDiagram
-    participant A as (A) User
-    participant I as Intruder (i) [Role P]
-    participant B as (B) Resource Server
+    participant A as A
+    participant I as Intruder (i) as (Role P)
+    participant B as B
 
     Note over I: IK = {a, b, i, id, pk(a), pk(b), pk(i), pk(id), inv(pk(i))}
 

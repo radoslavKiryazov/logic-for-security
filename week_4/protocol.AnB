@@ -47,7 +47,6 @@ Actions:
 Goals:
   P authenticates B on B, P, A, NB, Photos, Permission, NA, NP
   B authenticates P on P, B, NB, NB2
-  
   Photos secret between A, idp, P, B
   Secret_JPEG_Data secret between P, B
   pw(A, idp) guessable secret between A, idp
