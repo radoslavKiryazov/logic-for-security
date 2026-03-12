@@ -1,30 +1,42 @@
-Protocol: AuthorizationAccess_TLS
+Protocol: AuthorizationAccess
 
 Types:
-  Agent A, Idp, P, B;
-  Number NA, NB, Permission, Folder, Photos;
-  Function pw;
-  Format f1, f2, f3;
+  Agent A, idp, P, B;
+  Number NA, NB, NB2, NP, Permission, Photos, Secret_JPEG_Data;
+  Function pk, pw;
+  Format f1, f2, f3, f4, f5, f6, f7, f8, f9, f10;
 
 Knowledge:
-  A: A, Idp, P, B, pw(A,Idp);
-  Idp: A, Idp, P, B, pw(A,Idp);
-  P: A, Idp, P, B;
-  B: A, Idp, P, B;
+  A: A, idp, P, B, pk(idp), pw(A, idp);
+  idp: A, idp, P, B, pk(idp), inv(pk(idp)), pw(A, idp), pk(P), pk(B);
+  P: A, idp, P, B, pk(P), inv(pk(P)), pk(idp);
+  B: A, idp, P, B, pk(idp), inv(pk(B)), pk(B), pk(P);
 
 Actions:
-  [A] *->* Idp: f1(A,B,P,Folder,Permission,NA,pw(A,Idp))
-  Idp *->* [A]: f2(Idp,A,B,P,Folder,Permission,NA)
-  [A] *->* P: f2(Idp,A,B,P,Folder,Permission,NA)
-  [P] *->* B: f3(P,B,Folder,Permission,NA)
-  B *->* [P]: f3(B,P,Photos)
+  [A] *->* idp: f1(A, B, P, idp, NA, Permission, Photos, pw(A, idp))
+  
+  idp *->* [A]: f2(pk(P), pk(B), A, 
+                   {f3(idp, A, B, P, pk(P), Photos, Permission, NA, NB)}inv(pk(idp)))
+  
+  [A] *->* P: f4(A, P, pk(idp), 
+                 {f3(idp, A, B, P, pk(P), Photos, Permission, NA, NB)}inv(pk(idp)))
+
+  # --- HANDSHAKE PHASE ---
+  [P] *->* B: f5(NP, 
+                 {f6(P, B, A, NB, 
+                     {f3(idp, A, B, P, pk(P), Photos, Permission, NA, NB)}inv(pk(idp))
+                 )}inv(pk(P)))
+
+  B *->* [P]: f7(B, P, A, NB, Photos, Permission, NA, NP, NB2)
+
+  [P] *->* B: f8(NB2, {f9(P, B, NB, NB2)}inv(pk(P)))
+
+  B *->* [P]: f10(NB2, Secret_JPEG_Data)
 
 Goals:
-
-  Photos secret between B,P
-
-  B authenticates Idp on A,P,B,NA
-
-  B authenticates P on P,B,Folder,Permission,NA
-
-  P authenticates B on Photos
+  P authenticates B on B, P, A, NB, Photos, Permission, NA, NP
+  B authenticates P on P, B, NB, NB2
+  
+  Photos secret between A, idp, P, B
+  Secret_JPEG_Data secret between P, B
+  pw(A, idp) guessable secret between A, idp
